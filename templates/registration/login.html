@@ -1,0 +1,24 @@
+{% extends 'basebs.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Login come Lettore {% endblock %}
+
+{% block content %}
+
+{% if "notok" in request.GET.auth %}
+<div class="alert alert-danger" role="alert">
+  You don't have the required permissions!
+</div>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  {{form | crispy}}
+
+  <input type="submit" class="btn btn-success" value="Esegui login">
+</form>
+
+{% endblock %}
+
+{% block footer %} {% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Leave {{ queue.name }} {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        Do you really want to leave {{ queue.name }}?
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-success" href="{% url 'queues:queue_details' queue.id %}">NO</a>
+            <button class="btn btn-warning" action="submit">Yes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

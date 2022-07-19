@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "queuify"
+version = "0.1.0"
+description = "Web application to manage queues"
+authors = ["Rossi Lorenzo <snowycoder@gmail.com>"]
+license = "AGPL"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.0.4"
+django-crispy-forms = "^1.14.0"
+crispy-bootstrap5 = "^0.6"
+Pillow = "^9.1.0"
+django-timezone-field = "^5.0"
+django-webpush = "^0.3.4"
+six = "^1.16.0"
+tzdata = "^2022.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

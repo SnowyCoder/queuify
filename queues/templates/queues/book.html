@@ -1,0 +1,131 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Book from {{ queue.name }} {% endblock %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <!-- Don't worry, I hear you from the other side of the screen -->
+    <!-- "Why aren't you using django's forms?" -->
+    <!-- I wanted something more dynamic to showcase the app -->
+    <!-- This form will change based on the selected date's availability -->
+    <!-- (through the ancient power of AJAX) -->
+
+    <div class="mb-3">
+        <label for="day" class="form-label">
+            Day
+        </label>
+        <input class="form-control" type="date" id="day" name="day">
+    </div>
+
+    <div class="mb-3">
+        <div class="collapse" id="time-select-collapse" aria-expanded="false">
+            <label for="time-select" class="form-label">Available times</label>
+            <select id="time-select" class="form-select" aria-label="Select time" name="time" disabled>
+            </select>
+        </div>
+        <div class="collapse" id="time-choice-collapse" aria-expanded="false">
+            <label id="time-choice-label" for="time-choice" class="form-label">Time (from ?? to ??)</label>
+            <input id="time-choice" type="text" class="form-control" name="time" disabled>
+        </div>
+        <div class="collapse pt-2" id="error-collapse" aria-expanded="false">
+            <div class="alert alert-danger" id="error-message">
+                {% if error is "" %}
+                Please select a date
+                {% else %}
+                {{ error }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <input type="submit" id="submit" class="btn btn-success" disabled value="Book!">
+</form>
+
+<script>
+    (function() {
+        let collapseSelect = new bootstrap.Collapse("#time-select-collapse", {
+            toggle: false,
+        });
+        let collapseChoice = new bootstrap.Collapse("#time-choice-collapse", {
+            toggle: false,
+        });
+        let collapseError = new bootstrap.Collapse("#error-collapse", {
+            toggle: false,
+        });
+
+        let errorDiv = document.getElementById('error-message');
+        let submitBtn = document.getElementById('submit');
+        let dayInput = document.getElementById('day');
+        let timeSelect = document.getElementById('time-select');
+        let timeChoice = document.getElementById('time-choice');
+        let error = "{{ error }}";
+
+        if (dayInput.value == '') {
+            dayInput.valueAsDate = new Date();
+        }
+
+        // Some bit of ajax, as a treat :3
+        dayInput.onchange = async () => {
+            if (dayInput.value == '') return;
+            let day = dayInput.value;
+            let res = await fetch("{% url 'queues:queue_book_api' queue.id %}?day=" + day).then(x => x.json());
+
+            let hideError = () => collapseError.hide();
+            if (error) {
+                collapseError.show();
+                hideError = () => {};
+                error = "";
+            }
+
+            switch (res.state) {
+                case 'closed':
+                case 'full': {
+                    let reason = '';
+                    if (res.state == 'closed') {
+                        reason = 'Queue is closed';
+                    } else {// full
+                        reason = 'Queue is full';
+                    }
+                    errorDiv.innerText = `${reason}, please select another day`;
+                    collapseSelect.hide();
+                    collapseChoice.hide();
+                    collapseError.show();
+                    submitBtn.disabled = true;
+                    break;
+                }
+                case 'choose': {
+                    timeSelect.innerHTML = '';
+                    let html = '';
+                    for (let x of res.choices) {
+                        html += `<option value="${x[0]}">${x[0]}-${x[1]}</option>\n`;
+                    }
+                    timeSelect.innerHTML = html;
+                    timeSelect.disabled = false;
+                    timeChoice.disabled = true;
+                    submitBtn.disabled = false;
+                    collapseSelect.show();
+                    collapseChoice.hide();
+                    hideError();
+                    break;
+                }
+                case 'range': {
+                    let r = res.range;
+                    document.getElementById('time-choice-label').innerText = `Time (from ${r[0]} to ${r[1]})`
+                    collapseSelect.hide();
+                    collapseChoice.show();
+                    hideError();
+                    timeSelect.disabled = true;
+                    timeChoice.disabled = false;
+                    submitBtn.disabled = false;
+                    break;
+                }
+            }
+        };
+        // Manually trigger to handle page reloads
+        dayInput.onchange();
+    })();
+</script>
+
+{% endblock %}

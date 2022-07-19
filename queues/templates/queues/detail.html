@@ -1,0 +1,108 @@
+{% extends 'basebs.html' %}
+
+{% block title %} {{ object.name }} queuify {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <div style="height: 10em;">
+        {% if object.image %}
+        <img src="{{ object.image.url }}" alt="Queue image" class="w-100 h-100">
+        {% else %}
+        <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 bg-secondary" style="width: 10em;">
+            No image
+        </div>
+        {% endif %}
+    </div>
+
+    <h1>{{object.name}}</h1>
+    <h3>{{object.description}}</h3>
+
+    <div class="d-flex flex-nowrap flew-row pb-2 fs-5">
+        {% if object.join_mode == 'PUB' %}
+        <div class="badge rounded-pill bg-success">Public</div>
+        {% elif object.join_mode == 'URL' %}
+        <div class="badge rounded-pill bg-warning">URL-only</div>
+        {% elif object.join_mode == 'FRI' %}
+        <div class="badge rounded-pill bg-primary">Friend-only</div>
+        {% else %}
+        <div class="badge rounded-pill bg-danger">Invite-only</div>
+        {% endif %}
+
+        {% if object.is_privacy_hidden %}
+        <div class="badge rounded-pill bg-info">Confidential!</div>
+        {% endif %}
+    </div>
+
+    <div class="btn-group pb-2" role="group" aria-label="Queue operations">
+        {% if role == 'OWN' or role == 'EMP' %}
+            {% if object.join_mode == 'INV' %}
+            <a class="btn btn-primary" href="{% url 'queues:queue_invite' object.id %}">Invite</a>
+            {% endif %}
+
+            <a class="btn btn-primary" href="{% url 'queues:queue_manage' object.id %}">Manage</a>
+            <a class="btn btn-secondary" href="{% url 'queues:queue_edit_admins' object.id %}">Admins</a>
+            <a class="btn btn-secondary" href="{% url 'queues:queue_stats' object.id %}">Statistics</a>
+
+            {% if role == 'OWN' %}
+            <a class="btn btn-warning" href="{% url 'queues:queue_edit' object.id %}">Edit</a>
+            <a class="btn btn-warning" href="{% url 'queues:queue_edit_schedule' object.id %}">Schedule</a>
+            {% endif %}
+        {% else %}
+            {% if can_book %}
+            <a class="btn btn-primary" href="{% url 'queues:queue_book' object.id %}">Book!</a>
+                {% if not perms.queues.manage_reports%}
+                <a class="btn btn-danger" href="{% url 'queues:queue_report' object.id %}">Report</a>
+                {% endif %}
+            {% endif %}
+            {% if role == 'INV' %}
+            <a class="btn btn-secondary" href="{% url 'queues:queue_leave' object.id %}">Leave</a>
+            {% endif %}
+            {% if perms.queues.view_all_stats %}
+            <a class="btn btn-secondary" href="{% url 'queues:queue_stats' object.id %}">Statistics</a>
+            {% endif %}
+        {% endif %}
+        {% if perms.queues.manage_reports %}
+        <a class="btn btn-info" href="{% url 'queues:queue_report_review' object.id %}">Review</a>
+        {% endif %}
+    </div>
+
+    <!-- Schedule -->
+    <div class="pb-2">
+        <h4>Today: {{today_range}}</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Day</th>
+                    <th scope="col">Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in schedule %}
+                <tr>
+                    <th scope="row">{{ day.name }}</th>
+                    {% if day.times != None %}
+                    <td class="text-center">{{ day.times.0 }}-{{ day.times.1 }}</td>
+                    {% else %}
+                    <td class="text-center">Closed</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <div>
+
+    <div class="pb-2">
+        <h4>Expected wait time: {{ expected_time }} (by {{tickets_served}} tickets)</h4>
+        {% if friends %}
+            <h5> Also used by:
+                {% for f in friends %}
+                {{ f.first_name}}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </h5>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

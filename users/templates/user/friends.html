@@ -1,0 +1,63 @@
+{% extends 'basebs.html' %}
+
+{% block title %} My friends {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    {% if friends %}
+    <h2>Friends:</h2>
+    <div class="list-group w-75 pb-3">
+        {% for friend in friends %}
+        <div class="list-group-item d-flex">
+            <a href="{% url 'users:profile' friend.id %}" class="btn btn-outline-primary flex-grow-1 text-left">
+                {{ friend.first_name }}
+            </a>
+            <a class="btn btn-outline-danger" href="{% url 'users:remove_friend' friend.id %}">
+                X
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if received_friend_requests %}
+    <h2>Requests:</h2>
+    <div class="list-group w-75 pb-3">
+        {% for friend in received_friend_requests %}
+        <div class="list-group-item d-flex">
+            <a href="{% url 'users:profile' friend.id %}" class="btn btn-outline-primary flex-grow-1 text-left">
+                {{ friend.first_name }}
+            </a>
+            <a class="btn btn-outline-success" href="{% url 'users:add_friend' friend.id %}">
+                O
+            </a>
+            <a class="btn btn-outline-danger" href="{% url 'users:reject_friend' friend.id %}">
+                X
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if friend_requests %}
+    <h2>Requested:</h2>
+    <div class="list-group w-75 pb-3">
+        {% for friend in friend_requests %}
+        <div class="list-group-item d-flex">
+            <a href="{% url 'users:profile' friend.id %}" class="btn btn-outline-primary flex-grow-1 text-left">
+                {{ friend.first_name }}
+            </a>
+            <a class="btn btn-outline-danger" href="{% url 'users:remove_friend' friend.id %}">
+                X
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="w-100 justify-content-end d-flex">
+        <a class="btn btn-outline-primary" href={% url 'users:search' %}>Search other friends!</a>
+    </div>
+</div>
+
+{% endblock %}

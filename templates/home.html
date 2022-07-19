@@ -1,0 +1,37 @@
+{% extends 'basebs.html' %}
+{% load static %}
+
+{% block title %} Queuify {% endblock %}
+
+{% block content %}
+<img src="/static/logo.png" style="width: 14em"></img>
+<h1>Queuify</h1>
+<p>Queue's waiting time is over!</p>
+
+{% if suggested %}
+
+{% if suggested.0 == 'friends_are_using'%}
+<p>Friends are using also:</p>
+{% elif suggested.0 == 'discover' %}
+<p>Discover new queues</p>
+{% endif %}
+
+<div class="card m-2" style="width: 18rem;" role="button" onclick="location.href = '{% url 'queues:queue_details' suggested.1.id %}'">
+    <div class="card-img-top" style="height: 10em;">
+        {% if suggested.1.image %}
+        <img src="{{ suggested.1.image.url }}" alt="{{ suggested.1.name }}'s image" class="w-100 h-100">
+        {% else %}
+        <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 bg-secondary">
+            No image
+        </div>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ suggested.1.name }}</h5>
+        <p class="card-text">{{ suggested.1.description }}</p>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

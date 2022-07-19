@@ -1,0 +1,20 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Remove {{ other.username }} {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        Do you really want to remove {{ other.username }}?
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-success" href="{% url 'queues:queue_edit_admins' queue.id %}">NO</a>
+            <button class="btn btn-warning" action="submit">Yes :(</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

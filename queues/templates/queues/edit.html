@@ -1,0 +1,17 @@
+{% extends 'basebs.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Edit {{ object.name }} {% endblock %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    {{form | crispy}}
+
+    <input type="submit" class="btn btn-success" value="Save!">
+
+</form>
+{% endblock %}
+
+{% block footer %} {% endblock %}

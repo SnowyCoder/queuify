@@ -1,0 +1,13 @@
+{% extends 'basebs.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Edit {{ object.name }} {% endblock %}
+
+{% block content %}
+
+{% crispy form %}
+
+{% endblock %}
+
+{% block footer %} {% endblock %}

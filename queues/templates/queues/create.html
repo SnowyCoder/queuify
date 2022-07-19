@@ -1,0 +1,18 @@
+{% extends 'basebs.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Queue Creation {% endblock %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    {{form | crispy}}
+
+    <input type="submit" class="btn btn-success" value="Create!">
+
+</form>
+{% endblock %}
+
+{% block footer %} {% endblock %}

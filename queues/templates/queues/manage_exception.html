@@ -1,0 +1,23 @@
+{% extends 'basebs.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} {% if has_exception %} Edit {% else %} Add {% endif %} Exception {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        {% if has_exception %} Edit {% else %} Add {% endif %} Exception
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        {{ form | crispy }}
+
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-secondary" href="{% url 'queues:queue_manage' queue.id %}">Back</a>
+            <button class="btn btn-primary" action="submit">Edit</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

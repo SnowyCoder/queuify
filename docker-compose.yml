@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: ./docker_entrypoint.sh
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media:/code/media

@@ -1,0 +1,29 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Reports {% endblock %}
+
+{% block content %}
+
+
+<h1><a href="{% url 'queues:queue_details' queue.id %}">{{ queue.name }}</a> reports:</h1>
+<div class="d-flex flex-column justify-content-center align-items-center">
+    {% for rep in reports %}
+    <div class="card m-2" style="width: 18rem;" role="button" onclick="location.href = '{% url 'users:profile' rep.user.id %}'">
+        <div class="card-body">
+            <p class="card-title">{{ rep.user.username }}</p>
+            <p class="card-text">{{ rep.reason }}</p>
+        </div>
+    </div>
+    {% empty %}
+    No reports
+    {% endfor %}
+</div>
+<form  method="post">
+    {% csrf_token %}
+    <div class="btn-group">
+        <button class="btn btn-primary" role="submit">Review all</button>
+        <a class="btn btn-secondary" href="{% url 'queues:report_list' %}">Back</a>
+    </div>
+</form>
+
+{% endblock %}

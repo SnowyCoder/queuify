@@ -1,0 +1,52 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Search users {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <form class="d-flex pb-5" style="width: min(40em, 100%);" method="get">
+        <input class="form-control me-2" type="search" placeholder="Username" aria-label="Search" name="q" value="{{query}}">
+        <button class="btn btn-success" type="submit">Search</button>
+    </form>
+    <div class="d-flex flex-row justify-content-center align-items-center flex-wrap">
+        {% for user in result %}
+        <div class="card m-2" style="width: 18rem;" role="button" onclick="location.href = '{% url 'users:profile' user.id %}'">
+            <div class="card-img-top" style="height: 10em;">
+                {% if user.image %}
+                <img src="{{ user.image.url }}" alt="{{ user.username }}'s image" class="img-fluid h-100">
+                {% else %}
+                <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 bg-secondary">
+                    No image
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ user.username }}
+
+                    {% if user.state == 'you' %}
+                    <div class="badge bg-primary">You!</div>
+                    {% elif user.state == 'friend' %}
+                    <div class="badge bg-success">Friend!</div>
+                    {% endif %}
+                </h5>
+
+                <p class="card-text">{{ user.description }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            {% if query != '' %}
+            <h3>No user found...</h3>
+            <h5>Invite invite them to join!<h5>
+            {% else %}
+            <h3>Search for a name, surname or username</h3>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <a class="btn btn-secondary" href="{% url 'users:friends' %}">Back</a>
+</div>
+
+{% endblock %}

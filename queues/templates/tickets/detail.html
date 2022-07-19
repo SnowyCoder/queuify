@@ -1,0 +1,45 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Ticket details {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <div style="height: 10em;" role="button" onclick="location.href = '{% url 'queues:queue_details' object.queue.id %}'">
+        {% if object.queue.image %}
+        <img src="{{ object.queue.image.url }}" alt="Queue image" class="w-100 h-100">
+        {% else %}
+        <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 bg-secondary" style="width: 10em;">
+            No image
+        </div>
+        {% endif %}
+    </div>
+
+    <h1>{{object.queue.name}}</h1>
+    <h3>{{time}}</h3>
+    <div class="d-flex flex-nowrap flew-row pb-2 fs-4">
+        {% if object.state == 'OPE' %}
+        <div class="badge rounded-pill bg-success">Open</div>
+        {% elif object.state == 'SER' %}
+        <div class="badge rounded-pill bg-secondary">Served</div>
+        {% elif object.state == 'UCA' %}
+        <div class="badge rounded-pill bg-warning text-dark">Cancelled by you</div>
+        {% else %}
+        <div class="badge rounded-pill bg-warning text-dark">Cancelled by queue operator</div>
+        {% endif %}
+
+        {% if object.queue.is_privacy_hidden %}
+        <div class="badge rounded-pill bg-info">Confidential!</div>
+        {% endif %}
+    </div>
+
+    {% if object.cancel_message is not None%}
+    <h4>Message: {{ object.cancel_message }}</h4>
+    {% endif %}
+
+    {% if object.state == 'OPE' %}
+    <a class="btn btn-danger" href="{% url 'queues:ticket_cancel' object.id %}">Cancel</a>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'basebs.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Leave {{ queue.name }} {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        Invite user
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        {{form | crispy}}
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-secondary" href="{% url 'queues:queue_details' queue.id %}">Back</a>
+            <button class="btn btn-primary" action="submit">Invite</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

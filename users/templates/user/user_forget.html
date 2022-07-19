@@ -1,0 +1,19 @@
+{% extends 'basebs.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile cancellation {% endblock %}
+
+{% block content %}
+
+<h2>Do you really want to leave us?</h2>
+<div class="btn-group btn-group-vertical" role="group" aria-label="Confirmation">
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button class="btn btn-danger" action="submit">Yes, delete all the data</button>
+            <a class="btn btn-primary" href="{% url 'users:profile' user.id %}">No, sorry</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

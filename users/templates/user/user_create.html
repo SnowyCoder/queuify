@@ -1,0 +1,16 @@
+{% extends 'basebs.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} User Sign In {% endblock %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    {% crispy form %}
+</form>
+
+{% endblock %}
+
+{% block footer %} {% endblock %}

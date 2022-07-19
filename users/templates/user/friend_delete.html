@@ -1,0 +1,26 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Remove friend {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        {% if status == "friend" %}
+        Do you really want to unfriend {{ friend.first_name }}
+        {% elif status == "sent" %}
+        Do you really want to remove your offer to {{ friend.first_name }}?
+        {% elif status == "received" %}
+        Do you really want to reject {{ friend.first_name }}'s offer?
+        {% endif%}
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-success" href="{% url 'users:friends' %}">NO</a>
+            <button class="btn btn-warning" action="submit">Yes :(</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

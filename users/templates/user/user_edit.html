@@ -1,0 +1,13 @@
+{% extends 'basebs.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile edit {% endblock %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% crispy form %}
+</form>
+
+{% endblock %}

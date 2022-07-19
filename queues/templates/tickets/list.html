@@ -1,0 +1,27 @@
+{% extends 'basebs.html' %}
+
+{% block title %} My tickets {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-row justify-content-center align-items-center flex-wrap">
+    {% for t in tickets %}
+    <div class="card m-2 {{ t.card_style }}" style="width: 18rem;" role="button" onclick="location.href = '{% url 'queues:ticket_details' t.id %}'">
+        <div class="card-img-top" style="height: 10em;">
+            {% if t.queue.image %}
+            <img src="{{ t.queue.image.url }}" alt="{{ t.queue.name }}'s image" class="w-100 h-100">
+            {% else %}
+            <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 bg-secondary">
+                No image
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ t.queue.name }}</h5>
+            <p class="card-text">{{ t.time }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

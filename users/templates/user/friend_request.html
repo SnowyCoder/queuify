@@ -1,0 +1,24 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Add friend {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        {% if is_confirmation %}
+            Accept {{ froend.first_name }} friend request?
+        {% else %}
+            Do you want to send {{ friend.first_name }} a friend request?
+        {% endif %}
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-success" href="{% url 'users:friends' %}">No</a>
+            <button class="btn btn-warning" action="submit">Yes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

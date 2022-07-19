@@ -1,0 +1,23 @@
+{% extends 'basebs.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Cancel ticket {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        Do you really want to cancel {{ ticket.user.username }}'s ticket?
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        {{ form | crispy }}
+
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-secondary" href="{% url 'queues:queue_manage' ticket.queue.id %}">No</a>
+            <button class="btn btn-primary" action="submit">Yes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

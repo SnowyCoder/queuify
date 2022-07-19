@@ -1,0 +1,134 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Book from {{ queue.name }} {% endblock %}
+
+{% block head_libs %}
+<!-- https://www.daterangepicker.com/ -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<!-- billboard.js + d3.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.5.0/d3.min.js" integrity="sha512-+rnC6CO1Ofm09H411e0Ux7O9kqwM5/FlEHul4OsPk4QIHIYAiM77uZnQyIqcyWaZ4ddHFCvZGwUVGwuo0DPOnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/billboard.js/3.5.0-next.2/billboard.min.js" integrity="sha512-WGkqqTLbeFvWRxAVA5OgN6M4hoH4F+X76FaqpN41ZohMFDA/HMqXFOL6oYCJCbB8l2whwpHDX2YoHL/ZMbY4QA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/billboard.js/3.5.0-next.2/billboard.min.css" integrity="sha512-vbXAKcLMf+HhMcrV7tdI5S4oRw4RR3/++Z7sxfq2QGDvxYmplM8LFcqKzwZmawFoGdLq8szsUHhQPmtu+5/6Rg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="btn-group">
+    <a class="btn btn-secondary" href="{% url 'queues:queue_details' queue.id %}">Back</a>
+    <div id="reportrange" class="btn btn-primary">
+    </div>
+</div>
+
+<div id="ticket-chart"></div>
+<div id="wait-chart"></div>
+
+
+<script type="text/javascript">
+    (function() {
+        function onRenderedRegionGray() {
+            this.$.main.selectAll(".bb-region rect")
+            .style("fill", "#aaaaaa")
+            .style("fill-opacity", ".4");
+        }
+        let ticketChart = bb.generate({
+            bindto: '#ticket-chart',
+            data: {
+                x: 'x',
+                columns: [],
+                type: 'area-step',
+                groups: [['served', 'canceledQueue', 'canceledUser', 'open']],
+                order: (a, b) => {
+                    const arr = ['canceledQueue', 'canceledUser', 'served', 'open'];
+                    return arr.indexOf(a.id) > arr.indexOf(b.id);
+                }
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                },
+            },
+            onrendered: onRenderedRegionGray,
+        });
+        let waitChart = bb.generate({
+            bindto: '#wait-chart',
+            data: {
+                x: 'x',
+                columns: [],
+                type: 'area-step',
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                },
+                y: {
+                    tick: {
+                        format: function(x) {
+                            x = Math.round(x);
+                            let h = Math.floor(x / 60 / 60);
+                            let m = Math.floor(x / 60) % 60;
+                            let s = x % 60;
+                            let pad = (x) => ('00' + x).slice(-2);
+                            if (h == 0 && m == 0) {
+                                return s + "s";
+                            } else if (h == 0) {
+                                return m + "m" + pad(s) + "s";
+                            } else {
+                                return h + "h" + pad(m) + "m" + pad(s) + "s";
+                            }
+                        }
+                    }
+                }
+            },
+            onrendered: onRenderedRegionGray,
+        });
+
+        let loadData = async (from, to) => {
+            let fmt = 'YYYY-MM-DD'
+            from = from.format(fmt)
+            to = to.format(fmt)
+
+            let res = await fetch("{% url 'queues:queue_stats_api' queue.id %}?timeScale=days&from=" + from + '&to=' + to)
+                .then(x => x.json());
+            console.log(res);
+
+            ticketChart.load({
+                columns: res['tickets'],
+            });
+            ticketChart.regions(res['regions']);
+            waitChart.load({
+                columns: res['waits'],
+            });
+            waitChart.regions(res['regions']);
+        };
+
+        const rangeCb = (start, end) => {
+            $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            loadData(start, end);
+        };
+
+        let start = moment().subtract(29, 'days');
+        let end = moment();
+
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+               'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+               'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+               'This Month': [moment().startOf('month'), moment().endOf('month')],
+               'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, rangeCb);
+
+        rangeCb(start, end);
+
+    })();
+</script>
+
+{% endblock %}

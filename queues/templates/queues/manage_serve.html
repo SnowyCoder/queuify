@@ -1,0 +1,20 @@
+{% extends 'basebs.html' %}
+
+{% block title %} Ticket serving {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>
+        Have you served {{ ticket.user.first_name }}?
+    </h1>
+    <form  method="post">
+        {% csrf_token %}
+        <div class="btn-group" role="group" aria-label="Confirmation">
+            <a class="btn btn-secondary" href="{% url 'queues:queue_manage' ticket.queue.id %}">No</a>
+            <button class="btn btn-primary" action="submit">Yes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

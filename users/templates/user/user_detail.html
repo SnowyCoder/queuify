@@ -1,0 +1,33 @@
+{% extends 'basebs.html' %}
+{% load webpush_notifications %}
+
+{% block title %} Profile {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <div style="width: 10em; height: 10em;">
+        {% if object.image %}
+        <img src="{{ object.image.url }}" alt="Profile image" class="w-100 h-100">
+        {% else %}
+        <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 bg-secondary">
+            No image
+        </div>
+        {% endif %}
+    </div>
+
+    <h1>{{object.username}}</h1>
+    <h3>{{object.first_name}} {{object.last_name}}</h3>
+    <h4>{{object.description}}</h4>
+
+    {% if user.id == object.id %}
+    {% webpush_button with_class="btn btn-outline-info mb-2" %}
+    <div class="btn-group" role="group" aria-label="Confirmation">
+        <a class="btn btn-warning" href="{% url 'users:edit_profile' %}">Edit</a>
+        <a class="btn btn-danger" href="{% url 'users:forget' %}">Forget me</a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
